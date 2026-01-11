@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Fibonacci Spiral Connections</title>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="c"></canvas>
+  <script>
+    const canvas = document.getElementById("c");
+    const ctx = canvas.getContext("2d");
+
+    function resize() {
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    const center = { x: canvas.width / 2, y: canvas.height / 2 };
+    const numPoints = 1000;  // more points → denser spiral
+    const points = [];
+    const goldenAngle = 137.50776405; // degrees
+
+    // generate points along Fibonacci spiral
+    for (let i = 0; i < numPoints; i++) {
+      let r = 4 * Math.sqrt(i);  // distance from center
+      let theta = i * goldenAngle * Math.PI / 180;
+      points.push({ x: center.x + r * Math.cos(theta), y: center.y + r * Math.sin(theta) });
+    }
+
+    let step = 0;
+    const linesPerFrame = 5;
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // semi-transparent black for trailing effect
+      ctx.fillStyle = 'rgba(0,0,0,0.02)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // draw lines connecting sequential points
+      for (let i = 0; i < linesPerFrame; i++) {
+        const p1 = points[step % numPoints];
+        const p2 = points[(step + 1) % numPoints];
+
+        // pastel gradient color
+        ctx.strokeStyle = `hsla(${(step * 0.5) % 360},60%,70%,0.6)`;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+
+        step++;
+      }
+    }
+
+    animate();
+  </script>
+</body>
+
+</html>
